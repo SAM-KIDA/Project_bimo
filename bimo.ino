@@ -2,8 +2,12 @@
 #include <IRremote.h>
 IRrecv mo(7);
 decode_results ans;
-
 int press;
+
+//________________DC-MOTOR_________________
+int speedpin = 6,  dir1 = A0, dir2 = A1;
+int zspeed = 255; //it carries too much load so going for max speed for now
+
 //________________LCD_________________
 #include<LiquidCrystal.h>
 LiquidCrystal lcd(13 ,12, 11, 10, 9, 8); //16x2 lcd arduino interface pins
@@ -36,8 +40,12 @@ lcd.createChar(7 , s4);
 /*lcd.createChar(8 , s5); //Creating custom characters in CG-RAM
 */
 
- Serial.begin(9600);
- mo.enableIRIn();
+Serial.begin(9600);
+mo.enableIRIn();
+
+pinMode(speedpin, OUTPUT);
+pinMode(dir1, OUTPUT);
+pinMode(dir2, OUTPUT);
 }
 void loop()
 {
@@ -55,6 +63,21 @@ void loop()
     case 0xFF629D:
        focus();
        break;
+    case 0xFFA857:
+      digitalWrite(dir1, LOW);
+      digitalWrite(dir2, HIGH);
+      analogWrite(speedpin, zspeed);
+      break;
+    case 0xFF906F:
+      digitalWrite(dir2, LOW);
+      digitalWrite(dir1, HIGH);
+      analogWrite(speedpin, zspeed);
+      break;
+    case 0xFFE21D:
+      digitalWrite(dir2, LOW);
+      digitalWrite(dir1, LOW);
+      analogWrite(speedpin, zspeed);
+      break;
   }
   delay(time);
   mo.resume();
@@ -117,4 +140,4 @@ void wait()
   lcd.print("waiting for");
   lcd.setCursor(2, 1);
   lcd.print("command");
-}-
+}
