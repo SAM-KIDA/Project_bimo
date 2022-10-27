@@ -8,6 +8,11 @@ int press;
 int speedpin = 6,  dir1 = A0, dir2 = A1;
 int zspeed = 255; //it carries too much load so going for max speed for now
 
+//________________STEPPER-MOTOR_________________
+#include <Stepper.h>
+const int stepsPerRevolution = 1000;
+Stepper myStepper = Stepper(stepsPerRevolution, 3, 2, 1, 0);
+
 //________________LCD_________________
 #include<LiquidCrystal.h>
 LiquidCrystal lcd(13 ,12, 11, 10, 9, 8); //16x2 lcd arduino interface pins
@@ -56,6 +61,17 @@ void loop()
   press = ans.value;
   switch(press)
   {
+    case 0xFF02FD:
+      myStepper.setSpeed(10);
+      myStepper.step(stepsPerRevolution);
+      delay(1000);
+      break;
+   case 0xFFC23D:
+      myStepper.setSpeed(10);
+      myStepper.step(-stepsPerRevolution);
+      delay(1000);
+      break;
+
     case 0xFFA25D:
       smile();
       break;
@@ -67,6 +83,7 @@ void loop()
       digitalWrite(dir1, LOW);
       digitalWrite(dir2, HIGH);
       analogWrite(speedpin, zspeed);
+      Serial.print("forward");
       break;
     case 0xFF906F:
       digitalWrite(dir2, LOW);
@@ -140,4 +157,4 @@ void wait()
   lcd.print("waiting for");
   lcd.setCursor(2, 1);
   lcd.print("command");
-}
+  }
