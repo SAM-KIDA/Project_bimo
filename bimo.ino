@@ -13,6 +13,12 @@ int zspeed = 255; //it carries too much load so going for max speed for now
 const int stepsPerRevolution = 1000;
 Stepper myStepper = Stepper(stepsPerRevolution, 3, 2, 1, 0);
 
+//________________SERVO-MOTOR_________________
+#include <Servo.h>
+int servoPin = 5;
+Servo servo;
+int angle = 0;
+
 //________________LCD_________________
 #include<LiquidCrystal.h>
 LiquidCrystal lcd(13 ,12, 11, 10, 9, 8); //16x2 lcd arduino interface pins
@@ -28,13 +34,13 @@ byte s4[8]={0x00,0x00,0x00,0x00,0x1F,0x00,0x00,0x00};
 byte s5[8]={B11111,B11101,B11011,B11101,B11111,B10000,B10000,B10000,};
 //Custom characters byte arrays
 
-int time = 1000, time2 = 500;
+int time = 1000, time2 = 500, time3 = 3000;
 
 void setup()
 {
+//_________LCD___________
 lcd.begin(16 ,2);
 lcd.clear();
-
 lcd.createChar(1 , customchar);   //Creating custom characters in CG-RAM
 lcd.createChar(2 , a);
 lcd.createChar(3 , s);
@@ -42,19 +48,22 @@ lcd.createChar(4 , s1);
 lcd.createChar(5 , s2);
 lcd.createChar(6 , s3);
 lcd.createChar(7 , s4);
-/*lcd.createChar(8 , s5); //Creating custom characters in CG-RAM
-*/
+wait();
 
-Serial.begin(9600);
+//_________REMOTE___________
 mo.enableIRIn();
 
 pinMode(speedpin, OUTPUT);
 pinMode(dir1, OUTPUT);
 pinMode(dir2, OUTPUT);
+
+//_________SERVO___________
+servo.attach(servoPin);
+
 }
 void loop()
 {
- // wait();
+  smile();
 
   while (mo.decode(&ans) == 0)  {}
   delay(1000);
@@ -73,19 +82,28 @@ void loop()
       break;
 
     case 0xFFA25D:
-      smile();
+      focus();
+      for(angle = 0; angle < 180; angle++) {
+          servo.write(angle);
+          delay(15);
+      }
       break;
 
     case 0xFF629D:
        focus();
+       for(angle = 180; angle > 0; angle--) {
+          servo.write(angle);
+          delay(15);
+      }
        break;
     case 0xFFA857:
+      focus();
       digitalWrite(dir1, LOW);
       digitalWrite(dir2, HIGH);
       analogWrite(speedpin, zspeed);
-      Serial.print("forward");
       break;
     case 0xFF906F:
+      focus();
       digitalWrite(dir2, LOW);
       digitalWrite(dir1, HIGH);
       analogWrite(speedpin, zspeed);
@@ -157,4 +175,5 @@ void wait()
   lcd.print("waiting for");
   lcd.setCursor(2, 1);
   lcd.print("command");
-  }
+  delay(time3);
+}
