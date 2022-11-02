@@ -5,12 +5,12 @@ decode_results ans;
 int press;
 
 //________________DC-MOTOR_________________
-int speedpin = 6,  dir1 = A0, dir2 = A1;
+int speedpin = 6,  dir1 = A0, dir2 = A1, dir3 = A2, dir4 = A3;
 int zspeed = 255; //it carries too much load so going for max speed for now
 
 //________________STEPPER-MOTOR_________________
 #include <Stepper.h>
-const int stepsPerRevolution = 1000;
+const int stepsPerRevolution = 500;
 Stepper myStepper = Stepper(stepsPerRevolution, 3, 2, 1, 0);
 
 //________________SERVO-MOTOR_________________
@@ -83,7 +83,7 @@ void loop()
 
     case 0xFFA25D:
       focus();
-      for(angle = 0; angle < 180; angle++) {
+      for(angle = 0; angle < 60; angle++) {
           servo.write(angle);
           delay(15);
       }
@@ -91,7 +91,7 @@ void loop()
 
     case 0xFF629D:
        focus();
-       for(angle = 180; angle > 0; angle--) {
+       for(angle = 60; angle > 0; angle--) {
           servo.write(angle);
           delay(15);
       }
