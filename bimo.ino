@@ -5,7 +5,7 @@ decode_results ans;
 int press;
 
 //________________DC-MOTOR_________________
-int speedpin = 6,  dir1 = A0, dir2 = A1, dir3 = A2, dir4 = A3;
+int speedpinA = 6, speedpinB = 3,  dir1 = A0, dir2 = A1, dir3 = A2, dir4 = A3;
 int zspeed = 255; //it carries too much load so going for max speed for now
 
 //________________STEPPER-MOTOR_________________
@@ -53,9 +53,13 @@ wait();
 //_________REMOTE___________
 mo.enableIRIn();
 
-pinMode(speedpin, OUTPUT);
+//_________DC___________
+pinMode(speedpinA, OUTPUT);
+pinMode(speedpinA, OUTPUT);
 pinMode(dir1, OUTPUT);
 pinMode(dir2, OUTPUT);
+pinMode(dir3, OUTPUT);
+pinMode(dir4, OUTPUT);
 
 //_________SERVO___________
 servo.attach(servoPin);
@@ -100,18 +104,25 @@ void loop()
       focus();
       digitalWrite(dir1, LOW);
       digitalWrite(dir2, HIGH);
-      analogWrite(speedpin, zspeed);
+      digitalWrite(dir3, LOW);
+      digitalWrite(dir4, HIGH);
+      analogWrite(speedpinA, zspeed);
+      analogWrite(speedpinB, zspeed);
       break;
     case 0xFF906F:
       focus();
       digitalWrite(dir2, LOW);
       digitalWrite(dir1, HIGH);
-      analogWrite(speedpin, zspeed);
+      digitalWrite(dir4, LOW);
+      digitalWrite(dir3, HIGH);
+      analogWrite(speedpinA, zspeed);
+      analogWrite(speedpinB, zspeed);
       break;
     case 0xFFE21D:
       digitalWrite(dir2, LOW);
       digitalWrite(dir1, LOW);
-      analogWrite(speedpin, zspeed);
+      digitalWrite(dir3, LOW);
+      digitalWrite(dir4, LOW);
       break;
   }
   delay(time);
